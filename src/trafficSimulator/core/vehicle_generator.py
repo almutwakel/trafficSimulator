@@ -15,7 +15,7 @@ class VehicleGenerator:
 
     def set_default_config(self):
         """Set default configuration"""
-        self.vehicle_rate = 10
+        self.vehicle_rate = 60
         self.vehicles = [
             (1, {})
         ]
