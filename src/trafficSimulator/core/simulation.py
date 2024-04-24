@@ -17,7 +17,6 @@ class Simulation:
         self.t = 0.0
         self.frame_count = 0
         self.dt = 1/60  
-        # self.dt = 1
 
 
     def add_vehicle(self, veh):
@@ -110,29 +109,14 @@ class Simulation:
         self.t += self.dt
         self.frame_count += 1
 
-        # Check if any vehicles collided
-        # for segment in self.segments:
-        #     if len(segment.vehicles) != 0:
-        #         for i in range(1, len(segment.vehicles)):
-        #             if abs(self.vehicles[segment.vehicles[i]].x - self.vehicles[segment.vehicles[i-1]].x) < COLLISION_DISTANCE:
-        #                 self.vehicles[segment.vehicles[i]].collided = True
-        #                 self.vehicles[segment.vehicles[i-1]].collided = True
-        #                 print("Collision detected at time:", self.t)
-        #                 print("Vehicle 1:", self.vehicles[segment.vehicles[i]].x)
-        #                 print("Vehicle 2:", self.vehicles[segment.vehicles[i-1]].x)
-        # Overlap at intersection is also considered as collision
-
-
         # Get all vehicles and their positions
         vehicles = []
         for segment in self.segments:
             for vehicle_id in segment.vehicles:
                 vehicle = self.vehicles[vehicle_id]
-                # print(self.t)
                 t = vehicle.x / segment.get_length()
                 vp = (vehicle, segment.compute_x(t), segment.compute_y(t))
                 vehicles.append(vp)
-                print(vp)
         
             
         # Check if any vehicles collided by comparing their positions
