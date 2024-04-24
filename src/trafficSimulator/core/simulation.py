@@ -66,6 +66,8 @@ class Simulation:
             for i in range(1, len(segment.vehicles)):
                 self.vehicles[segment.vehicles[i]].v_max = segment.get_length()
                 self.vehicles[segment.vehicles[i]].update(self.vehicles[segment.vehicles[i-1]], self.dt)
+                if self.vehicles[segment.vehicles[i]].x >= segment.get_length():
+                    self.vehicles[segment.vehicles[i]].x = segment.get_length()
 
         # Check roads for out of bounds vehicle
         for segment in self.segments:
@@ -120,27 +122,27 @@ class Simulation:
         #                 print("Vehicle 2:", self.vehicles[segment.vehicles[i-1]].x)
         # Overlap at intersection is also considered as collision
 
-        # Check if any vehicles collided using the compute_x(t) and compute_y(t) functions of the segments
-        for s1 in range(len(self.segments)):
-            segment = self.segments[s1]
-            if len(segment.vehicles) != 0:
-                for i in range(len(segment.vehicles)):
-                    veh1 = self.vehicles[segment.vehicles[i]]
-                    for s2 in range(len(self.segments[s1+1:])):
-                        segment2 = self.segments[s1+1:][s2]
-                        if len(segment2.vehicles) == 0:
-                            continue
-                        for j in range(len(segment2.vehicles)):
-                            veh2 = self.vehicles[segment2.vehicles[j]]
-                            x1 = segment.compute_x(self.t % 1.0)
-                            y1 = segment.compute_y(self.t % 1.0)
-                            x2 = segment2.compute_x(self.t % 1.0)
-                            y2 = segment2.compute_y(self.t % 1.0)
-                            print("Vehicle 1:", x1, y1)
-                            print("Vehicle 2:", x2, y2)
-                            if abs(x1 - x2) < COLLISION_DISTANCE and abs(y1 - y2) < COLLISION_DISTANCE:
-                                veh1.collided = True
-                                veh2.collided = True
-                                print("Collision detected at time:", self.t)
+
+        # Get all vehicles and their positions
+        vehicles = []
+        for segment in self.segments:
+            for vehicle_id in segment.vehicles:
+                vehicle = self.vehicles[vehicle_id]
+                # print(self.t)
+                t = vehicle.x / segment.get_length()
+                vp = (vehicle, segment.compute_x(t), segment.compute_y(t))
+                vehicles.append(vp)
+                print(vp)
+        
+            
+        # Check if any vehicles collided by comparing their positions
+        for i in range(len(vehicles)):
+            for j in range(i+1, len(vehicles)):
+                if (vehicles[i][1] - vehicles[j][1])**2 + (vehicles[i][2] - vehicles[j][2])**2 < COLLISION_DISTANCE**2:
+                    vehicles[i][0].collided = True
+                    vehicles[j][0].collided = True
+                    print("Collision detected at time:", self.t)
+                    print("Vehicle 1:", vehicles[i])
+                    print("Vehicle 2:", vehicles[j])
 
 
